@@ -1,0 +1,141 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Validation1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.p_array",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy github data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_github",
+									"type": "DatasetReference",
+									"parameters": {
+										"file_name": {
+											"value": "@item().file_name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_bronze",
+									"type": "DatasetReference",
+									"parameters": {
+										"folder_name": {
+											"value": "@item().folder_name",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@item().file_name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Validation1",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_validation",
+						"type": "DatasetReference"
+					},
+					"timeout": "0.12:00:00",
+					"sleep": 10
+				}
+			}
+		],
+		"parameters": {
+			"p_array": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"folder_name": "netflix_cast",
+						"file_name": "netflix_cast"
+					},
+					{
+						"folder_name": "netflix_category",
+						"file_name": "netflix_category"
+					},
+					{
+						"folder_name": "netflix_countries",
+						"file_name": "netflix_countries"
+					},
+					{
+						"folder_name": "netflix_directors",
+						"file_name": "netflix_directors"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-12-24T08:34:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

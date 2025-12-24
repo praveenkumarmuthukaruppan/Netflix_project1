@@ -1,0 +1,9 @@
+{
+	"name": "Netflix-project4DF",
+	"location": "uksouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f1a95ef8-44b2-4688-a852-dffa6332cabd",
+		"tenantId": "c8f07e5f-5139-4eed-a9b7-db64046ad2c0"
+	}
+}
